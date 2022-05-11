@@ -6,11 +6,12 @@ import MakeAppointment from './MakeAppointment';
 import SecondBanner from './SecondBanner';
 import Services from './Services';
 import Testimolians from './Testimolians';
+import Footer from '../Shared/Footer';
 
 const Home = () => {
     return (
         <>
-            <div className="container mx-auto">
+            <div>
                 <Banner />
                 <Info />
                 <Services />
@@ -18,6 +19,7 @@ const Home = () => {
                 <MakeAppointment />
                 <Testimolians />
                 <Contact />
+                <Footer />
             </div>
         </>
     );
