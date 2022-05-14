@@ -45,8 +45,8 @@ const SignUp = () => {
                         <h2 className="text-center text-2xl font-bold">Sign Up</h2>
 
                         <form onSubmit={handleSubmit(onSubmit)}>
-                            <div class="form-control w-full max-w-xs">
-                                <label class="label">Enter Your Name:</label>
+                            <div className="form-control w-full max-w-xs">
+                                <label className="label">Enter Your Name:</label>
                                 <input
                                     type={"text"}
                                     {...register("name", {
@@ -58,15 +58,15 @@ const SignUp = () => {
                                     className="input input-bordered w-full max-w-xs"
                                     placeholder="Enter Your Name"
                                 />
-                                <label class="label">
-                                    <span class="label-text-alt text-red-500">
+                                <label className="label">
+                                    <span className="label-text-alt text-red-500">
                                         {errors.name?.type === 'required' && errors.name.message}
                                     </span>
                                 </label>
                             </div>
 
-                            <div class="form-control w-full max-w-xs">
-                                <label class="label">Enter Your Email Address:</label>
+                            <div className="form-control w-full max-w-xs">
+                                <label className="label">Enter Your Email Address:</label>
                                 <input
                                     type={"email"}
                                     {...register("email", {
@@ -82,16 +82,16 @@ const SignUp = () => {
                                     className="input input-bordered w-full max-w-xs"
                                     placeholder="Enter Your Email Address"
                                 />
-                                <label class="label">
-                                    <span class="label-text-alt text-red-500">
+                                <label className="label">
+                                    <span className="label-text-alt text-red-500">
                                         {errors.email?.type === 'required' && errors.email.message}
                                         {errors.email?.type === 'pattern' && errors.email.message}
                                     </span>
                                 </label>
                             </div>
 
-                            <div class="form-control w-full max-w-xs">
-                                <label class="label">Enter Your Password:</label>
+                            <div className="form-control w-full max-w-xs">
+                                <label className="label">Enter Your Password:</label>
                                 <input
                                     type={"password"}
                                     {...register("password", {
@@ -107,8 +107,8 @@ const SignUp = () => {
                                     className="input input-bordered w-full max-w-xs"
                                     placeholder="Enter Your Password"
                                 />
-                                <label class="label">
-                                    <span class="label-text-alt text-red-500">
+                                <label className="label">
+                                    <span className="label-text-alt text-red-500">
                                         {errors.password?.type === 'required' && errors.password.message}
                                         {errors.password?.type === 'minLength' && errors.password.message}
                                     </span>

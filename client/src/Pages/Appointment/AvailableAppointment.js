@@ -7,8 +7,14 @@ const AvailableAppointment = ({ date }) => {
     const [services, setServices] = useState([]);
     const [treatment, setTreatment] = useState(null);
 
+    // useEffect(() => {
+    //     fetch("/service")
+    //         .then(res => res.json())
+    //         .then(data => setServices(data));
+    // }, [date]);
+
     useEffect(() => {
-        fetch("/service")
+        fetch(`/available?date=${format(date, 'PP')}`)
             .then(res => res.json())
             .then(data => setServices(data));
     }, [date]);
