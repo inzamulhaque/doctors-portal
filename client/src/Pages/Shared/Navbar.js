@@ -11,8 +11,11 @@ const Navbar = () => {
         <li><Link to="/">Home</Link></li>
         <li><Link to="/appointment">Appointment</Link></li>
         <li><Link to="/review">Review's</Link></li>
-        <li><Link to="/contact">Contact Us</Link></li>
-        <li><Link to="/about">About Us</Link></li>
+        <li><Link to="/contact">ContactUs</Link></li>
+        <li><Link to="/about">AboutUs</Link></li>
+        {
+            user && <li><Link to="/dashboard">Dashboard</Link></li>
+        }
         <li>
             {
                 user ? <button className="btn btn-ghost text-red-500" onClick={() => signOut(auth)}>Sign Out</button> :
@@ -34,10 +37,15 @@ const Navbar = () => {
                     </div>
                     <Link to="/" className="btn btn-ghost normal-case text-xl">Doctors Portal</Link>
                 </div>
-                <div className="navbar-end hidden lg:flex">
+                <div className="navbar-center lg:navbar-end hidden lg:flex">
                     <ul className="menu menu-horizontal p-0">
                         {menuItems}
                     </ul>
+                </div>
+                <div className="navbar-end lg:hidden">
+                    <label htmlFor="dashborad-sidebar" className="drawer-button btn btn-ghost lg:hidden">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
+                    </label>
                 </div>
             </div>
         </>

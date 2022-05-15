@@ -4,7 +4,7 @@ import auth from '../../firebase.init';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { toast } from 'react-toastify';
 
-const BookModal = ({ treatment, date, setTreatment }) => {
+const BookModal = ({ treatment, date, setTreatment, refetch }) => {
     const [user, loading, error] = useAuthState(auth);
     const { _id, name, slots } = treatment;
 
@@ -53,6 +53,7 @@ const BookModal = ({ treatment, date, setTreatment }) => {
                         progress: undefined,
                     });
                 }
+                refetch();
                 setTreatment(null);
             });
     }
