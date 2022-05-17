@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import auth from '../../firebase.init';
 import { useSignInWithEmailAndPassword, useSignInWithGoogle } from 'react-firebase-hooks/auth';
+import useToken from '../../hooks/useToken';
 
 const Signin = () => {
     const [signInWithGoogle, googleUser, googleLoading, googleError] = useSignInWithGoogle(auth);
@@ -13,6 +14,8 @@ const Signin = () => {
         emailPassError,
     ] = useSignInWithEmailAndPassword(auth);
 
+    const [token] = useToken(emailPassUser || googleUser)
+
     const { register, formState: { errors }, handleSubmit } = useForm();
 
     const navigate = useNavigate();
@@ -20,10 +23,10 @@ const Signin = () => {
     const from = location.state?.from?.pathname || "/";
 
     useEffect(() => {
-        if (emailPassUser || googleUser) {
+        if (token) {
             navigate(from, { replace: true });
         }
-    }, [emailPassUser, googleUser, from, navigate]);
+    }, [token, from, navigate]);
 
     let signInError;
 

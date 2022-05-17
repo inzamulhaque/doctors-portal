@@ -8,11 +8,13 @@ import Appointment from './Pages/Appointment/Appointment';
 import Dashboard from './Pages/Dashboard/Dashboard';
 import SignUp from './Pages/Signin/SignUp';
 import RequireAuth from './Pages/Signin/RequireAuth';
+import RequireAdmin from './Pages/Signin/RequireAdmin';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import MyAppointments from './Pages/Dashboard/MyAppointments';
 import MyReview from './Pages/Dashboard/MyReview';
 import MyHistory from './Pages/Dashboard/MyHistory';
+import Users from './Pages/Dashboard/Users';
 
 function App() {
   return (
@@ -31,6 +33,9 @@ function App() {
             <Route index element={<MyAppointments />} />
             <Route path="review" element={<MyReview />} />
             <Route path="history" element={<MyHistory />} />
+            <Route path="users" element={<RequireAdmin>
+              <Users />
+            </RequireAdmin>} />
           </Route>
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<SignUp />} />
