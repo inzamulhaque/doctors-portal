@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const { MongoClient, ServerApiVersion } = require('mongodb');
+var nodemailer = require('nodemailer');
+var sgTransport = require('nodemailer-sendgrid-transport');
 require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
@@ -30,6 +32,43 @@ function verifyJWT(req, res, next) {
     });
 
 }
+
+
+// send mail grid
+const emaolSenderoptions = {
+    auth: {
+        api_key: process.env.EMAIL_API_KEY
+    }
+}
+
+const emailClient = nodemailer.createTransport(sgTransport(emaolSenderoptions));
+
+function sendAppointmentEmail({ patient, patientName, treatment, date, slot }) {
+    const email = {
+        from: process.env.EMAIL_SENDER,
+        to: patient,
+        subject: `Your appoinment for ${treatment} on ${date} at ${slot} is confirmed`,
+        text: `Hello ${patientName}! Your appoinment for ${treatment} on ${date} at ${slot} is confirmed`,
+        html: `
+            <div>
+                <h3>Hello <span style="color: blue">${patientName}</span>!</h3>
+                <p>Your appoinment for ${treatment} is confirmed</p>
+                <p>Looking forward to seeing you on ${date} at ${slot}.</p>
+            </div>
+        `
+    };
+
+    emailClient.sendMail(email, function (err, info) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            console.log('Message sent: ', info);
+        }
+    });
+}
+
+// send mail grid
 
 async function run() {
     try {
@@ -101,6 +140,7 @@ async function run() {
                 return res.send({ success: false, booking: exixts });
             }
             const result = await bookingCollection.insertOne(booking);
+            sendAppointmentEmail(booking);
             res.send({ success: true, result });
         });
 

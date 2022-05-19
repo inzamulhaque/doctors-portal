@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from 'react-query';
+import { toast } from 'react-toastify';
+import DeleteConfirmModal from './DeleteConfirmModal';
 import DoctorRow from './DoctorRow';
 
 const ManageDoctor = () => {
+    const [deletingDoctor, setDeletingDoctor] = useState(null);
     const { data: doctor, isLoading, refetch } = useQuery("doctors", () => fetch(`/doctor`, {
         headers: {
             authorization: `Bearer ${localStorage.getItem('accessToken')}`
@@ -11,6 +14,22 @@ const ManageDoctor = () => {
 
     if (isLoading) {
         return "Loading...";
+    }
+
+    const handleDelete = email => {
+        fetch(`/doctor/${email}`, {
+            method: "DELETE",
+            headers: {
+                authorization: `Bearer ${localStorage.getItem('accessToken')}`
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.deletedCount) {
+                    toast.success(`${email} deleted`);
+                    refetch();
+                }
+            });
     }
 
     return (
@@ -29,10 +48,12 @@ const ManageDoctor = () => {
                 </thead>
                 <tbody>
                     {
-                        doctor?.map((doctor, index) => <DoctorRow key={doctor._id} doctor={doctor} index={index} refetch={refetch} />)
+                        doctor?.map((doctor, index) => <DoctorRow key={doctor._id} doctor={doctor} index={index} setDeletingDoctor={setDeletingDoctor} />)
                     }
                 </tbody>
             </table>
+
+            {deletingDoctor && <DeleteConfirmModal deletingDoctor={deletingDoctor} handleDelete={handleDelete} />}
         </>
     );
 };
