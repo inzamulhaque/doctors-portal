@@ -1,10 +1,11 @@
 const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 var nodemailer = require('nodemailer');
 var sgTransport = require('nodemailer-sendgrid-transport');
 require('dotenv').config();
+const stripe = require('stripe')(process.env.STRIPE_KEY);
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -68,6 +69,39 @@ function sendAppointmentEmail({ patient, patientName, treatment, date, slot }) {
     });
 }
 
+function sendPaymentConfirmationEmail(booking) {
+    const { patient, patientName, treatment, date, slot } = booking;
+
+    var email = {
+        from: process.env.EMAIL_SENDER,
+        to: patient,
+        subject: `We have received your payment for ${treatment} is on ${date} at ${slot} is Confirmed`,
+        text: `Your payment for this Appointment ${treatment} is on ${date} at ${slot} is Confirmed`,
+        html: `
+        <div>
+          <p> Hello ${patientName}, </p>
+          <h3>Thank you for your payment . </h3>
+          <h3>We have received your payment</h3>
+          <p>Looking forward to seeing you on ${date} at ${slot}.</p>
+          <h3>Our Address</h3>
+          <p>Andor Killa Bandorban</p>
+          <p>Bangladesh</p>
+          <a href="https://web.programming-hero.com/">unsubscribe</a>
+        </div>
+      `
+    };
+
+    emailClient.sendMail(email, function (err, info) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            console.log('Message sent: ', info);
+        }
+    });
+
+}
+
 // send mail grid
 
 async function run() {
@@ -77,6 +111,7 @@ async function run() {
         const bookingCollection = client.db("doctor_portal").collection("bookings");
         const userCollection = client.db("doctor_portal").collection("users");
         const doctorCollection = client.db("doctor_portal").collection("doctors");
+        const paymentCollection = client.db("doctor_portal").collection("payments");
 
         const verifyAdmin = async (req, res, next) => {
             const requester = req.decoded.email;
@@ -185,6 +220,29 @@ async function run() {
             }
         });
 
+        app.get("/booking/:id", verifyJWT, async (req, res) => {
+            const { id } = req.params;
+            const query = { _id: ObjectId(id) };
+            const booking = await bookingCollection.findOne(query);
+            res.send(booking);
+        });
+
+        app.patch("/booking/:id", verifyJWT, async (req, res) => {
+            const { id } = req.params;
+            const payment = req.body;
+            const filter = { _id: ObjectId(id) };
+            const updatedDoc = {
+                $set: {
+                    paid: true,
+                    transactionId: payment.transactionId
+                }
+            };
+            const updatedBookin = await bookingCollection.updateOne(filter, updatedDoc);
+            const result = await paymentCollection.insertOne(payment);
+
+            res.send(updatedBookin);
+        });
+
         app.get("/doctor", verifyJWT, verifyAdmin, async (req, res) => {
             const doctors = await doctorCollection.find().toArray();
             res.send(doctors);
@@ -201,6 +259,22 @@ async function run() {
             const filter = { email };
             const result = await doctorCollection.deleteOne(filter);
             res.send(result);
+        });
+
+        app.post("/create-payment-intent", verifyJWT, async (req, res) => {
+            const service = req.body;
+            const { price } = service;
+            const amount = price * 100;
+
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: amount,
+                currency: "usd",
+                payment_method_types: ["card"]
+            });
+
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            });
         });
 
     } finally {
