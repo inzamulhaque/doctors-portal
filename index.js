@@ -286,9 +286,6 @@ run().catch(console.dir);
 
 if (process.env.NODE_ENV == "production") {
     app.use(express.static("client/build"));
-    app.get("*", function (request, response) {
-        response.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
-    });
 }
 
 app.listen(port, () => {
