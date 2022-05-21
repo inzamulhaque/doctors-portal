@@ -284,9 +284,9 @@ async function run() {
 
 run().catch(console.dir);
 
-app.get("/", (req, res) => {
-    res.send("Server Running");
-});
+if (process.env.NODE_ENV == "production") {
+    app.use(express.static("client/build"));
+}
 
 app.listen(port, () => {
     console.log(`http://localhost:${port}`);
